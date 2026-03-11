@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibecode</title>
+    <title>bench.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
+            background: #0c0c0c;
             color: #e0e0e0;
             min-height: 100vh;
             padding: 80px 24px;
@@ -19,18 +19,50 @@
             max-width: 640px;
             margin: 0 auto;
         }
-        h1 {
-            font-family: 'Instrument Serif', serif;
-            font-size: 3rem;
-            font-weight: 400;
-            color: #fff;
-            margin-bottom: 8px;
+
+        /* --- Mark --- */
+        .mark {
+            display: flex;
+            align-items: baseline;
+            gap: 0;
+            margin-bottom: 48px;
         }
-        .subtitle {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 60px;
+        .mark-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #D4856A, #E8A87C, #D4856A);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 6s ease-in-out infinite;
         }
+        .mark-dot {
+            font-size: 2.4rem;
+            font-weight: 600;
+            color: #D4856A;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        .mark-sub {
+            display: block;
+            font-size: 0.8rem;
+            color: #555;
+            letter-spacing: 0.06em;
+            margin-top: 6px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* --- Projects --- */
         .projects {
             display: flex;
             flex-direction: column;
@@ -47,10 +79,11 @@
             background: #111;
             text-decoration: none;
             color: #e0e0e0;
-            transition: background 0.15s;
+            transition: background 0.2s, padding-left 0.2s;
         }
         a.project:hover {
-            background: #1a1a1a;
+            background: #161616;
+            padding-left: 34px;
         }
         .project-info {
             display: flex;
@@ -58,45 +91,56 @@
             gap: 4px;
         }
         .project-name {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 500;
             color: #fff;
         }
         .project-desc {
-            font-size: 0.85rem;
-            color: #666;
+            font-size: 0.82rem;
+            color: #555;
+        }
+        .project-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
         .project-tag {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             padding: 4px 10px;
             border-radius: 20px;
             font-weight: 500;
-            white-space: nowrap;
         }
-        .tag-live { background: #1a2e1a; color: #4ade80; }
-        .tag-external { background: #1a1a2e; color: #818cf8; }
+        .tag-live { background: rgba(212,133,106,0.12); color: #D4856A; }
+        .tag-external { background: rgba(140,140,255,0.08); color: #7b7bba; }
         .arrow {
-            color: #444;
-            margin-left: 16px;
-            font-size: 1.2rem;
-            transition: color 0.15s;
+            color: #333;
+            font-size: 1.1rem;
+            transition: color 0.2s, transform 0.2s;
         }
-        a.project:hover .arrow { color: #fff; }
+        a.project:hover .arrow {
+            color: #D4856A;
+            transform: translateX(3px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Vibecode</h1>
-        <p class="subtitle">Small tools, built fast.</p>
+        <div class="mark">
+            <div>
+                <span class="mark-text">bench</span><span class="mark-dot">.</span>
+                <span class="mark-sub">things I built</span>
+            </div>
+        </div>
         <div class="projects">
             <a class="project" href="./la-happy-hours/">
                 <div class="project-info">
                     <span class="project-name">Pour — LA Happy Hours</span>
                     <span class="project-desc">146 restaurants, 200 deals, 42 neighborhoods</span>
                 </div>
-                <div style="display:flex;align-items:center;">
+                <div class="project-right">
                     <span class="project-tag tag-live">Live</span>
                     <span class="arrow">&rarr;</span>
                 </div>
@@ -106,7 +150,7 @@
                     <span class="project-name">NBA Trade Mapper</span>
                     <span class="project-desc">Visual trade trees, salary pipelines, playoff game logs</span>
                 </div>
-                <div style="display:flex;align-items:center;">
+                <div class="project-right">
                     <span class="project-tag tag-external">Vercel</span>
                     <span class="arrow">&rarr;</span>
                 </div>
