@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pour &mdash; LA Happy Hour Guide</title>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Happy List LA &mdash; LA's Authoritative Happy Hour Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/tippy.js@6/dist/tippy.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,8 +12,8 @@
   <header>
     <div class="header-top">
       <div class="brand">
-        <h1>Pour</h1>
-        <p class="tagline">The LA Happy Hour Guide</p>
+        <h1>Happy List LA</h1>
+        <p class="tagline">LA's Authoritative Happy Hour Guide</p>
       </div>
       <div class="header-meta">
         <span class="venue-count" id="venue-count"></span>
@@ -37,7 +37,6 @@
             </div>
             <div class="ms-actions">
               <button class="ms-action-btn" data-action="all">All</button>
-              <button class="ms-action-btn" data-action="none">None</button>
             </div>
             <div class="ms-options"></div>
           </div>
@@ -52,24 +51,35 @@
             </div>
             <div class="ms-actions">
               <button class="ms-action-btn" data-action="all">All</button>
-              <button class="ms-action-btn" data-action="none">None</button>
             </div>
             <div class="ms-options"></div>
           </div>
         </div>
       </div>
       <div class="filter-group">
-        <select id="quality-filter">
-          <option value="all">All Deals</option>
-          <option value="A+">A+ Only</option>
-          <option value="A">A and above</option>
-          <option value="B+">B+ and above</option>
-        </select>
+        <div class="multi-select" id="quality-ms">
+          <button class="ms-trigger" data-placeholder="Deals">All Deals</button>
+          <div class="ms-dropdown">
+            <div class="ms-actions">
+              <button class="ms-action-btn" data-action="all">All</button>
+            </div>
+            <div class="ms-options"></div>
+          </div>
+        </div>
       </div>
       <div class="filter-group">
-        <select id="tag-filter">
-          <option value="all">All Types</option>
-        </select>
+        <div class="multi-select" id="tag-ms">
+          <button class="ms-trigger" data-placeholder="Types">All Types</button>
+          <div class="ms-dropdown">
+            <div class="ms-search-wrap">
+              <input type="text" class="ms-search" placeholder="Filter...">
+            </div>
+            <div class="ms-actions">
+              <button class="ms-action-btn" data-action="all">All</button>
+            </div>
+            <div class="ms-options"></div>
+          </div>
+        </div>
       </div>
       <div class="filter-group">
         <button id="late-night-toggle" class="toggle-btn">Late Night</button>

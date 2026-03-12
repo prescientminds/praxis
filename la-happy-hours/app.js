@@ -82,12 +82,13 @@ function buildTooltip(deal) {
 
 // ---- Multi-select dropdown component ----
 class MultiSelect {
-  constructor(el, options, { colorFn, countFn, onChange }) {
+  constructor(el, options, { colorFn, countFn, labelFn, onChange }) {
     this.el = el;
     this.options = options;
     this.selected = new Set(options);
     this.colorFn = colorFn;
     this.countFn = countFn;
+    this.labelFn = labelFn || (v => v);
     this.onChange = onChange;
     this.render();
     this.bind();
@@ -105,7 +106,7 @@ class MultiSelect {
       div.innerHTML = `
         <input type="checkbox" checked>
         ${color ? `<span class="ms-swatch" style="background:${color.bg}"></span>` : ''}
-        <span class="ms-label">${opt}</span>
+        <span class="ms-label">${this.labelFn(opt)}</span>
         ${count ? `<span class="ms-count">${count}</span>` : ''}
       `;
       container.appendChild(div);
@@ -124,7 +125,7 @@ class MultiSelect {
         if (ms !== this.el) ms.classList.remove('open');
       });
       this.el.classList.toggle('open');
-      if (this.el.classList.contains('open')) {
+      if (this.el.classList.contains('open') && search) {
         search.value = '';
         this.filterOptions('');
         setTimeout(() => search.focus(), 50);
@@ -132,7 +133,7 @@ class MultiSelect {
     });
 
     dropdown.addEventListener('click', e => e.stopPropagation());
-    search.addEventListener('input', () => this.filterOptions(search.value));
+    if (search) search.addEventListener('input', () => this.filterOptions(search.value));
 
     this.el.querySelector('.ms-options').addEventListener('change', (e) => {
       if (e.target.type === 'checkbox') {
@@ -146,10 +147,10 @@ class MultiSelect {
 
     this.el.querySelectorAll('.ms-action-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const action = btn.dataset.action;
-        this.selected = action === 'all' ? new Set(this.options) : new Set();
+        const allSelected = this.selected.size === this.options.length;
+        this.selected = allSelected ? new Set() : new Set(this.options);
         this.el.querySelectorAll('.ms-option input').forEach(cb => {
-          cb.checked = action === 'all';
+          cb.checked = !allSelected;
         });
         this.updateTrigger();
         this.onChange(this.selected);
@@ -225,19 +226,20 @@ async function init() {
   // Venue count
   document.getElementById('venue-count').textContent = `${restaurantNames.length} venues across ${neighborhoods.length} neighborhoods`;
 
-  // Populate tag filter
+  // Quality and tag options
+  const qualityTiers = ['A+', 'A', 'B+', 'B'];
+  const qualityCounts = {};
+  qualityTiers.forEach(q => { qualityCounts[q] = deals.filter(d => d.quality === q).length; });
+
   const allTags = [...new Set(deals.flatMap(d => d.tags || []))].sort();
-  const tagSelect = document.getElementById('tag-filter');
-  allTags.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = t.replace(/-/g, ' ');
-    tagSelect.appendChild(opt);
-  });
+  const tagCounts = {};
+  allTags.forEach(t => { tagCounts[t] = deals.filter(d => (d.tags || []).includes(t)).length; });
 
   // State
   let selectedNeighborhoods = new Set(neighborhoods);
   let selectedRestaurants = new Set(restaurantNames);
+  let selectedQualities = new Set(qualityTiers);
+  let selectedTags = new Set(allTags);
   let showLateNight = false;
 
   // Init multi-selects
@@ -268,6 +270,31 @@ async function init() {
       onChange: (sel) => {
         selectedRestaurants = sel;
         renderPills();
+        refresh();
+      }
+    }
+  );
+
+  const qualityMs = new MultiSelect(
+    document.getElementById('quality-ms'),
+    qualityTiers,
+    {
+      countFn: q => qualityCounts[q],
+      onChange: (sel) => {
+        selectedQualities = sel;
+        refresh();
+      }
+    }
+  );
+
+  const tagMs = new MultiSelect(
+    document.getElementById('tag-ms'),
+    allTags,
+    {
+      countFn: t => tagCounts[t],
+      labelFn: t => t.replace(/-/g, ' '),
+      onChange: (sel) => {
+        selectedTags = sel;
         refresh();
       }
     }
@@ -340,13 +367,14 @@ async function init() {
 
   // ---- Filtering ----
   function getFilteredDeals() {
-    const qualityVal = document.getElementById('quality-filter').value;
-    const tagVal = tagSelect.value;
     return deals.filter(d => {
       if (!selectedNeighborhoods.has(d.neighborhood)) return false;
       if (!selectedRestaurants.has(d.restaurant)) return false;
-      if (qualityVal !== 'all' && qualityRank(d.quality) < qualityRank(qualityVal)) return false;
-      if (tagVal !== 'all' && !(d.tags || []).includes(tagVal)) return false;
+      if (!selectedQualities.has(d.quality)) return false;
+      if (selectedTags.size < allTags.length) {
+        const dealTags = d.tags || [];
+        if (dealTags.length === 0 || !dealTags.some(t => selectedTags.has(t))) return false;
+      }
       const startHour = parseInt(d.startTime.split(':')[0]);
       if (!showLateNight && startHour >= 21) return false;
       return true;
@@ -551,9 +579,6 @@ async function init() {
 
   // ---- Filter bindings ----
   function refresh() { renderGrid(); }
-
-  document.getElementById('quality-filter').addEventListener('change', refresh);
-  tagSelect.addEventListener('change', refresh);
 
   const lateNightBtn = document.getElementById('late-night-toggle');
   lateNightBtn.addEventListener('click', () => {
